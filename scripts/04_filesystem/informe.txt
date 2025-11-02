@@ -1,0 +1,6 @@
+Nombre                   	Size (bytes)	Permisos    
+-------------------------------------------------------------
+01_check_path.sh         	449         	-rw-r--r--  
+02_backup_file.sh        	927         	-rw-r--r--  
+03_dir_report.sh         	1304        	-rwxr-xr-x  
+informe.txt              	270         	-rw-r--r--  
