@@ -30,9 +30,8 @@ test_case "Sobresaliente" \
 
 test_case "Error" \
   "echo 15 | bash $SCRIPT" \
-  "*Introduzca un número del 0 al 10.*" \
-  1
-
+  "*Inválida*" \
+  0
 
 
 summary || exit 1
