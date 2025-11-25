@@ -1,7 +1,7 @@
 #!/bin/bash
-source "../base_test.sh"  # Ajustar ruta a base_test.sh según la ubicación real
+source "../base_test.sh"
 
-SCRIPT="../../02_flow_control/01_if_else.sh"  # Ruta relativa al script a testear
+SCRIPT="../../02_flow_control/01_if_else.sh"
 
 test_case "Número mayor que 10" \
   "echo 15 | bash $SCRIPT" \
