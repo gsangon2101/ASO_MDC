@@ -15,12 +15,12 @@ test_case "Contador 1" \
 
 test_case "Entrada 0 error" \
   "echo 0 | bash $SCRIPT" \
-  "*que sea mayor que 0 la proxima vez*" \
+  "*Que sea mayor que 0 la próxima vez*" \
   1
 
 test_case "Entrada negativa error" \
   "echo -5 | bash $SCRIPT" \
-  "*que sea mayor que 0 la proxima vez*" \
+  "*Que sea mayor que 0 la próxima vez*" \
   1
 
 summary || exit 1

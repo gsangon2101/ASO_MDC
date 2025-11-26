@@ -1,0 +1,27 @@
+[0;31m✖[0m suma positiva
+   esperado: rc=0, stdout ~ 15
+   obtenido: rc=127
+   stdout obtenido:
+     bash: línea 1: scripts/01_basics/05_args_check.sh: No existe el fichero o el directorio
+[0;31m✖[0m suma con negativos
+   esperado: rc=0, stdout ~ 7
+   obtenido: rc=127
+   stdout obtenido:
+     bash: línea 1: scripts/01_basics/05_args_check.sh: No existe el fichero o el directorio
+[0;31m✖[0m faltan argumentos
+   esperado: rc=1, stdout ~ Uso:\ \*
+   obtenido: rc=127
+   stdout obtenido:
+     bash: línea 1: scripts/01_basics/05_args_check.sh: No existe el fichero o el directorio
+[0;31m✖[0m no numéricos
+   esperado: rc=2, stdout ~ Error:\ ambos\ argumentos\ deben\ ser\ numéricos.
+   obtenido: rc=127
+   stdout obtenido:
+     bash: línea 1: scripts/01_basics/05_args_check.sh: No existe el fichero o el directorio
+[0;31m✖[0m uno numérico y el otro no
+   esperado: rc=2, stdout ~ Error:\ ambos\ argumentos\ deben\ ser\ numéricos.
+   obtenido: rc=127
+   stdout obtenido:
+     bash: línea 1: scripts/01_basics/05_args_check.sh: No existe el fichero o el directorio
+
+[1mResultados:[0m 5 pruebas — [0;32m0 OK[0m, [0;31m5 FAIL[0m
