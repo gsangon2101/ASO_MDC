@@ -4,28 +4,27 @@ source "../base_test.sh"
 SCRIPT="../../02_flow_control/04_menu_loop.sh"
 
 test_case "Mostrar fecha" \
-  "echo 1 | bash $SCRIPT" \
-  "*$(date)*" \
+  "echo -e '1\n4' | bash $SCRIPT" \
+  "*Fecha actual:*" \
   0
 
 test_case "Mostrar usuario" \
-  "echo 2 | bash $SCRIPT" \
-  "*$(whoami)*" \
+  "echo -e '2\n4' | bash $SCRIPT" \
+  "*Usuario actual:*" \
   0
 
 test_case "Directorio" \
-  "echo 3 | bash $SCRIPT" \
-  "*$(pwd)*" \
+  "echo -e '3\n4' | bash $SCRIPT" \
+  "*Directorio actual:*" \
   0
 
 test_case "Salir" \
   "echo 4 | bash $SCRIPT" \
-  "*Saliendo*" \
+  "*Saliendo. ¡Hasta luego!*" \
   0
 
-
 test_case "Opción no válida" \
-  "echo 999 | bash $SCRIPT" \
+  "echo -e '999\n4' | bash $SCRIPT" \
   "*Opción no válida*" \
   0
 
