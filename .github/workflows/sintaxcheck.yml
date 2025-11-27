@@ -1,0 +1,27 @@
+name: bash-syntax-check
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  syntax:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Comprobar sintaxis de todos los .sh
+        run: |
+          echo "Comprobando sintaxis con bash -n ..."
+          find . -type f -name '*.sh' | while read -r script; do
+            echo "Revisando $script"
+            if ! bash -n "$script"; then
+              echo "Error de sintaxis en $script"
+              exit 1
+            fi
+          done
+          echo "Sintaxis correcta en todos los scripts."
