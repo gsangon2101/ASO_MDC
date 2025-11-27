@@ -1,0 +1,17 @@
+[0;31m✖[0m nombre del script
+   esperado: rc=0, stdout ~ El\ script\ se\ llama\ \*
+   obtenido: rc=0
+   stdout obtenido:
+     bash: line 1: scripts/01_basics/04_args.sh: No such file or directory
+[0;31m✖[0m argumentos 7 y 8
+   esperado: rc=0, stdout ~ $'Primer número: 7\nSegundo número: 8'
+   obtenido: rc=0
+   stdout obtenido:
+     bash: line 1: scripts/01_basics/04_args.sh: No such file or directory
+[0;31m✖[0m resultado correcto
+   esperado: rc=0, stdout ~ Resultado:\ 15
+   obtenido: rc=0
+   stdout obtenido:
+     bash: line 1: scripts/01_basics/04_args.sh: No such file or directory
+
+[1mResultados:[0m 3 pruebas — [0;32m0 OK[0m, [0;31m3 FAIL[0m
