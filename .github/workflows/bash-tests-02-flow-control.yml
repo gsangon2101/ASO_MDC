@@ -21,6 +21,7 @@ jobs:
       - name: Ejecutar tests de 02_flow_control
         run: |
           set -e
+          cd scripts/tests/02_flow_control
           echo "Buscando tests en scripts/tests/02_flow_control ..."
           find scripts/tests/02_flow_control -type f -name 'test_*.sh' | while read -r test_script; do
             echo "Ejecutando $test_script ..."
