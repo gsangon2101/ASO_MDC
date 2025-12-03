@@ -1,9 +1,9 @@
 #!/bin/bash
 TEST_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-source "$TEST_DIR../base_test.sh"
+source "$TEST_DIR/../base_test.sh"
 
-SCRIPT="$TEST_DIR../../02_flow_control/06_while_counter.sh"
+SCRIPT="$TEST_DIR/../../02_flow_control/06_while_counter.sh"
 
 test_case "Contador normal 3" \
   "echo 3 | bash $SCRIPT" \
