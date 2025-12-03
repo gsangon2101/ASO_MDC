@@ -22,5 +22,10 @@ test_case "Detecta directorio" \
   "*Directorio: dir_prueba*" \
   0
 
+test_case "Detecta otro tipo de archivo" \
+  "echo \"$out\"" \
+  "*Otro tipo de archivo: enlace_simbolico*" \
+  0
+
 summary || { rm -rf "$TMPDIR"; exit 1; }
 rm -rf "$TMPDIR"
