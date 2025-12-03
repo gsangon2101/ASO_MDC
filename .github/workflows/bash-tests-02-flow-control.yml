@@ -22,5 +22,11 @@ jobs:
         run: |
           set -e
           echo "Ejecutando scripts/tests/02_flow_control/test_01_if_else.sh ..."
-          bash scripts/tests/02_flow_control/test_01_if_else.sh > scripts/tests/02_flow_control/test_01_if_else.log 2>&1
-          echo "test_01_if_else.sh OK"
+          if bash scripts/tests/02_flow_control/test_01_if_else.sh > scripts/tests/02_flow_control/test_01_if_else.log 2>&1; then
+          echo "✅ test_01_if_else.sh OK"
+          else
+          echo "❌ test_01_if_else.sh FAILED. Log:"
+          cat scripts/tests/02_flow_control/test_01_if_else.log
+          exit 1
+          fi
+
