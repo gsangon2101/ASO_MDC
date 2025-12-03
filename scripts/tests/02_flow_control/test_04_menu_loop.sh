@@ -1,7 +1,9 @@
 #!/bin/bash
-source "../base_test.sh"
+TEST_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-SCRIPT="../../02_flow_control/04_menu_loop.sh"
+source "$TEST_DIR../base_test.sh"
+
+SCRIPT="$TEST_DIR../../02_flow_control/04_menu_loop.sh"
 
 test_case "Mostrar fecha" \
   "echo -e '1\n4' | bash $SCRIPT" \

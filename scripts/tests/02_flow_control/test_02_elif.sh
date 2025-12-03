@@ -1,7 +1,9 @@
 #!/bin/bash
-source "../base_test.sh"
+TEST_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-SCRIPT="../../02_flow_control/02_elif.sh"
+source "$TEST_DIR../base_test.sh"
+
+SCRIPT="$TEST_DIR../../02_flow_control/02_elif.sh"
 
 test_case "Suspenso" \
   "echo 4 | bash $SCRIPT" \

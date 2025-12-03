@@ -1,7 +1,13 @@
 #!/bin/bash
-source "../base_test.sh"
 
-SCRIPT="$(cd ../../02_flow_control && pwd)/05_for_files.sh"
+# Directorio donde está este test
+TEST_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Cargar la librería de tests
+source "$TEST_DIR/../base_test.sh"
+
+# Ruta absoluta al script que vamos a testear
+SCRIPT="$TEST_DIR/../../02_flow_control/05_for_files.sh"
 
 # Crear entorno temporal y datos
 TMPDIR=$(mktemp -d)

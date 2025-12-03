@@ -1,11 +1,11 @@
-name: bash-test-if-else
+name: bash-tests-02-flow-control
 
 on:
   push:
   pull_request:
 
 jobs:
-  test-if-else:
+  test-02-flow-control:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -18,15 +18,19 @@ jobs:
         run: |
           find scripts -type f -name '*.sh' -print0 | xargs -0 chmod +x
 
-      - name: Ejecutar solo test_01_if_else.sh
+      - name: Ejecutar todos los test_*.sh de 02_flow_control
         run: |
           set -e
-          echo "Ejecutando scripts/tests/02_flow_control/test_01_if_else.sh ..."
-          if bash scripts/tests/02_flow_control/test_01_if_else.sh > scripts/tests/02_flow_control/test_01_if_else.log 2>&1; then
-          echo "✅ test_01_if_else.sh OK"
-          else
-          echo "❌ test_01_if_else.sh FAILED. Log:"
-          cat scripts/tests/02_flow_control/test_01_if_else.log
-          exit 1
-          fi
-
+          cd scripts/tests/02_flow_control
+          echo "Directorio actual: $(pwd)"
+          find . -type f -name 'test_*.sh' | sort | while read -r test_script; do
+            echo "Ejecutando $test_script ..."
+            if ! bash "$test_script" &> "${test_script%.sh}.log"; then
+              echo "$test_script FAILED. Log:"
+              cat "${test_script%.sh}.log"
+              exit 1
+            else
+              echo "$test_script OK"
+            fi
+          done
+          echo "Todos los tests de 02_flow_control han pasado correctamente."
