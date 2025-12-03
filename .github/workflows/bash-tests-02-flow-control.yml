@@ -23,14 +23,23 @@ jobs:
           set -e
           cd scripts/tests/02_flow_control
           echo "Directorio actual: $(pwd)"
+          failed=0
+
           find . -type f -name 'test_*.sh' | sort | while read -r test_script; do
+            echo "=================================================="
             echo "Ejecutando $test_script ..."
             if ! bash "$test_script" &> "${test_script%.sh}.log"; then
-              echo "$test_script FAILED. Log:"
+              echo "❌ $test_script FAILED. Log:"
               cat "${test_script%.sh}.log"
-              exit 1
+              failed=1
             else
-              echo "$test_script OK"
+              echo "✅ $test_script OK"
             fi
           done
-          echo "Todos los tests de 02_flow_control han pasado correctamente."
+
+          if [[ $failed -ne 0 ]]; then
+            echo "Al menos un test ha fallado."
+            exit 1
+          else
+            echo "Todos los tests de 02_flow_control han pasado correctamente."
+          fi
