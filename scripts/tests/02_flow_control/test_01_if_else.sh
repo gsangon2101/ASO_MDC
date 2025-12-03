@@ -1,7 +1,9 @@
 #!/bin/bash
-source "scripts/tests/base_test.sh"
+TEST_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-SCRIPT="scripts/02_flow_control/01_if_else.sh"
+source "$TEST_DIR/../base_test.sh"
+
+SCRIPT="$TEST_DIR/../../02_flow_control/01_if_else.sh"
 
 test_case "Número mayor que 10" \
   "echo 15 | bash $SCRIPT" \
