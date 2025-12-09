@@ -1,7 +1,9 @@
 [Unit]
-Description=Gestion de usuarios desde CSV
+Description=Backup semanal con backup.sh
 
 [Service]
 Type=oneshot
-ExecStart=../backup.sh
+User=asir
+Group=asir
+ExecStart=/home/asir/repos/ASO_MDC/scripts/05_automation/systemd/backup.sh \ /home/asir/documentos /etc /home/asir/.config
 

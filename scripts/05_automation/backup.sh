@@ -1,44 +1,60 @@
 #!/bin/bash
-csv="usuarios.csv"                         # Ruta al archivo CSV con los datos (usuario, grupo, operación)
-log="/var/log/gestion_usuarios.log"        # Archivo donde se deja registro de todas las operaciones
 
-while IFS=',' read -r usuario grupo operacion; do  # Lee cada línea del CSV separándola por comas
-    # 1. Comprobar si el grupo existe. Si no, crearlo
-    # Se utiliza 'getent group' para comprobar de forma estándar y portable si el grupo existe.
-    if ! getent group "$grupo" > /dev/null; then
-        groupadd "$grupo"                  # Si el grupo no existe, lo crea con 'groupadd'
-        echo "$(date) - groupadd - $grupo" >> $log   # Registra la creación del grupo en el log
+# Directorio temporal local
+TMP_DIR="/tmp/backup"
+
+# Datos del backup
+HOSTNAME_LOCAL="$(hostname)"
+FECHA="$(date +%Y%m%d%H%M)"
+BACKUP_NAME="backup_${HOSTNAME_LOCAL}_${FECHA}.tar"
+
+# Destino remoto (ajusta estos datos)
+REMOTE_USER="asir"
+REMOTE_HOST="guillermo.asir"
+REMOTE_DIR="/backups/${REMOTE_USER}"
+
+# 1) Comprobar que hay al menos una ruta como parámetro
+if [ "$#" -lt 1 ]; then
+    echo "Uso: $0 ruta1 [ruta2 ...]"
+    exit 1
+fi
+
+# 2) Crear directorio temporal limpio
+rm -rf "$TMP_DIR"
+mkdir -p "$TMP_DIR" || exit 1
+
+# 3) Comprimir cada ruta en un .zst dentro de $TMP_DIR
+for RUTA in "$@"; do
+    if [ ! -e "$RUTA" ]; then
+        echo "ERROR: La ruta '$RUTA' no existe"
+        exit 1
     fi
 
-    # 2. Según la operación ("add" para añadir, "rm" para eliminar/bloquear)
-    if [[ "$operacion" == "add" ]]; then
-        # Comprueba si el usuario ya existe.
-        if getent passwd "$usuario" > /dev/null; then
-            # Si ya existe, lo anota en el log e ignora la creación para evitar duplicados.
-            echo "$(date) - add-usuario-existe - $usuario" >> $log
-            continue
-        fi
-        # Crea el usuario con su home (-m) y lo asigna al grupo indicado (-g).
-        # 'useradd' es el comando estándar para añadir usuarios.
-        useradd -m -g "$grupo" "$usuario"
-        echo "$(date) - add - $usuario" >> $log
-        # Se asegura que el directorio /home/usuario exista.
-        [[ ! -d /home/"$usuario" ]] && mkdir -p /home/"$usuario"
+    NOMBRE=$(basename "$RUTA")
+    DESTINO_ZST="${TMP_DIR}/${NOMBRE}.zst"
 
-    elif [[ "$operacion" == "rm" ]]; then
-        # Comprueba si el usuario existe antes de eliminar o bloquear.
-        if ! getent passwd "$usuario" > /dev/null; then
-            echo "$(date) - rm-usuario-no-existe - $usuario" >> $log
-            continue
-        fi
-        # Verifica si el usuario ya está bloqueado para evitar doble bloqueo.
-        # 'passwd -S' muestra el estado; si contiene "L" está bloqueado.
-        if passwd -S "$usuario" | grep -q "L"; then
-            echo "$(date) - rm-usuario-bloqueado - $usuario" >> $log
-            continue
-        fi
-        passwd -l "$usuario"      # Bloquea la cuenta del usuario
-        mv /home/"$usuario" /home/eliminados/"$usuario"   # Mueve su home a /home/eliminados
-        echo "$(date) - rm - $usuario" >> $log            # Registra la operación en el log
+    zstd -q -r -o "$DESTINO_ZST" "$RUTA"
+    if [ $? -ne 0 ]; then
+        echo "ERROR al comprimir '$RUTA'"
+        exit 1
     fi
-done < "$csv"    # Termina el bucle procesando todas las líneas del archivo CSV
+done
+
+# 4) Crear el tar sin compresión con todos los .zst
+cd "$TMP_DIR" || exit 1
+tar -cf "$BACKUP_NAME" *.zst || exit 1
+
+# 5) Subir el tar a la máquina remota
+ssh "${REMOTE_USER}@${REMOTE_HOST}" "mkdir -p '${REMOTE_DIR}'"
+scp "$BACKUP_NAME" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/" || exit 1
+
+# 6) Rotar backups en la máquina remota (mantener solo los 10 más recientes)
+ssh "${REMOTE_USER}@${REMOTE_HOST}" "
+  cd '${REMOTE_DIR}' || exit 1
+  ls -1t backup_${HOSTNAME_LOCAL}_*.tar 2>/dev/null | tail -n +11 | xargs -r rm --
+"
+# 7) Limpiar directorio temporal local
+cd /
+rm -rf "$TMP_DIR"
+
+exit 0
