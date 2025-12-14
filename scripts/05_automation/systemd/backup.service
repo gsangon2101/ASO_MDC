@@ -3,7 +3,7 @@ Description=Backup semanal con backup.sh
 
 [Service]
 Type=oneshot
-User=asir
-Group=asir
-ExecStart=/home/asir/repos/ASO_MDC/scripts/05_automation/systemd/backup.sh \ /home/asir/documentos /etc /home/asir/.config
+User=guille
+Group=guille
+ExecStart=/home/guille/repos/ASO_MDC/scripts/05_automation/systemd/backup.sh \ /home/guille/.config
 

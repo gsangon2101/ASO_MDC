@@ -1,60 +1,50 @@
 #!/bin/bash
-
-# Directorio temporal local
 TMP_DIR="/tmp/backup"
 
-# Datos del backup
 HOSTNAME_LOCAL="$(hostname)"
 FECHA="$(date +%Y%m%d%H%M)"
 BACKUP_NAME="backup_${HOSTNAME_LOCAL}_${FECHA}.tar"
+BACKUP_ZST="${BACKUP_NAME}.zst"
 
-# Destino remoto (ajusta estos datos)
-REMOTE_USER="asir"
-REMOTE_HOST="guillermo.asir"
-REMOTE_DIR="/backups/${REMOTE_USER}"
+REMOTE_USER="user"
+REMOTE_HOST="192.168.1.140"
+REMOTE_DIR="/home/user/backups"   # o la ruta absoluta que quieras
 
-# 1) Comprobar que hay al menos una ruta como parámetro
 if [ "$#" -lt 1 ]; then
     echo "Uso: $0 ruta1 [ruta2 ...]"
     exit 1
 fi
 
-# 2) Crear directorio temporal limpio
 rm -rf "$TMP_DIR"
 mkdir -p "$TMP_DIR" || exit 1
 
-# 3) Comprimir cada ruta en un .zst dentro de $TMP_DIR
-for RUTA in "$@"; do
-    if [ ! -e "$RUTA" ]; then
-        echo "ERROR: La ruta '$RUTA' no existe"
-        exit 1
-    fi
+# 1) Crear un tar con TODAS las rutas
+tar -cf "${TMP_DIR}/${BACKUP_NAME}" "$@" || {
+    echo "ERROR al crear tar"
+    exit 1
+}
 
-    NOMBRE=$(basename "$RUTA")
-    DESTINO_ZST="${TMP_DIR}/${NOMBRE}.zst"
+# 2) Comprimir ese tar con zstd
+zstd -q "${TMP_DIR}/${BACKUP_NAME}" -o "${TMP_DIR}/${BACKUP_ZST}" || {
+    echo "ERROR al comprimir backup"
+    exit 1
+}
 
-    zstd -q -r -o "$DESTINO_ZST" "$RUTA"
-    if [ $? -ne 0 ]; then
-        echo "ERROR al comprimir '$RUTA'"
-        exit 1
-    fi
-done
+echo "Contenido de $TMP_DIR:"
+ls -lh "$TMP_DIR"
 
-# 4) Crear el tar sin compresión con todos los .zst
 cd "$TMP_DIR" || exit 1
-tar -cf "$BACKUP_NAME" *.zst || exit 1
 
-# 5) Subir el tar a la máquina remota
+# 3) Subir el backup .tar.zst a la máquina remota
 ssh "${REMOTE_USER}@${REMOTE_HOST}" "mkdir -p '${REMOTE_DIR}'"
-scp "$BACKUP_NAME" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/" || exit 1
+scp "$BACKUP_ZST" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/" || exit 1
 
-# 6) Rotar backups en la máquina remota (mantener solo los 10 más recientes)
+# 4) Rotar (mantener solo los 10 más recientes)
 ssh "${REMOTE_USER}@${REMOTE_HOST}" "
   cd '${REMOTE_DIR}' || exit 1
-  ls -1t backup_${HOSTNAME_LOCAL}_*.tar 2>/dev/null | tail -n +11 | xargs -r rm --
+  ls -1t backup_${HOSTNAME_LOCAL}_*.tar.zst 2>/dev/null | tail -n +11 | xargs -r rm --
 "
-# 7) Limpiar directorio temporal local
+
 cd /
 rm -rf "$TMP_DIR"
-
 exit 0
